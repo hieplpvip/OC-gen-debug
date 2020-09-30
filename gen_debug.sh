@@ -19,10 +19,10 @@ patchmaticB="$scriptDir/patchmatic"
 patchmaticBURL="https://raw.githubusercontent.com/hieplpvip/OC-gen-debug/master/patchmatic"
 maskedVal="XX-MASKED-XX"
 checkForConnAhead=0
-randomNumber=$(echo $(( ( RANDOM )  + 12 )))
-outDir="$homeDir/Desktop/$randomNumber"
-panicDir="$outDir/panic_logs"
+randomNumber=$(echo $(( ( RANDOM ) + 12 )))
+outDir="$homeDir/Desktop/debug_$randomNumber"
 zipFileName=debug_$randomNumber.zip
+panicDir="$outDir/panic_logs"
 efiloc="null"
 sysPfl=/usr/sbin/system_profiler
 hostName=$(hostname | sed 's/.local//g' | sed 's/-/_/g')
@@ -40,14 +40,11 @@ function printHeader(){
 	clear
 	echo -e "====================================="
 	echo -e "+   macOS DEBUG REPORT GENERATOR    +"
-	echo -e "-------------------------------------"
+	echo -e "+-----------------------------------+"
 	echo -e "+       SCRIPT VERSION $scriptVersion        +"
+	echo -e "+         AUTHOR: hieplpvip         +"
 	echo -e "====================================="
-	echo -e " " && sleep 0.5
-	echo -e "====================================="
-	echo -e "+      AUTHOR: hieplpvip            +"
-	echo -e "====================================="
-	echo " " && sleep 0.5
+	echo " "
 }
 
 function checkConn(){
@@ -76,7 +73,7 @@ function IOIncrement(){
 timesIncremented=1
 function checkIOREG(){
 	if [[ ! -e "$outDir/$hostName.ioreg" ]]; then
-		echo "IOREG dump failed. Retrying by increasing delays..." && sleep 0.5
+		echo "IOREG dump failed. Retrying by increasing delays..."
 
 		# Increment Delays
 		IOIncrement
@@ -300,8 +297,8 @@ function updateIfNew(){
 			chmod a+x ./ndbg
 			reVer=$(./ndbg -v)
 			if [[ "$reVer" != $scriptVersion ]]; then
-				echo "Hey "$(whoami)"! Before we proceed, I found a new version of the script." && sleep 0.5
-				echo "You are running $scriptVersion and new version is $reVer" && sleep 0.5
+				echo "Hey "$(whoami)"! Before we proceed, I found a new version of the script."
+				echo "You are running $scriptVersion and new version is $reVer"
 				read -p "Shall I update the program now?[y/n]: " updAns
 				case $updAns in
 					[yY]* )
@@ -343,7 +340,6 @@ read -p "Do we agree? [Yy/Nn]: " contResp
 case $contResp in
 	[yY]* )
 		# Continue
-		echo "Cool!" && sleep 0.4
 		;;
 	[nN]* )
 		# Exit
@@ -450,7 +446,7 @@ if [ -e $regExplorer ];
 	then
 	echo -e "IORegistryExplorer found at $regExplorer"
 	echo "Verifying if correct version of IORegistryExplorer is installed."
-	if [[  -e $regExplorer/isVerified ]]; then
+	if [[ -e $regExplorer/isVerified ]]; then
 		echo "Your version of IORegistryExplorer.app passed the check. Good to go!"
 		checkForConnAhead=1
 	else
@@ -636,18 +632,14 @@ echo -e "Dumped loaded ACPI tables."
 # Dump opencore files
 echo -e "Dumping OpenCore files."
 efiloc="$(sudo "$efiScript")"
-echo -e "Mounted EFI at $efiloc (credits RehabMan)"
-echo "Verifying your EFI files..."
-dsdtAgeVerified="false";
-bootAgeVerified="false";
+echo -e "Mounted EFI at $efiloc"
 if [[ -e "$efiloc/EFI/OC" ]]; then
-	cp -prf "$efiloc/EFI/CLOVER" .
+	cp -prf "$efiloc/EFI/OC" .
 	echo -e "Masking your System IDs"
-	$pledit -c "Set PlatformInfo:Generic:MLB $maskedVal" config.plist &>/dev/null
-	$pledit -c "Set PlatformInfo:Generic:ROM $maskedVal" config.plist &>/dev/null
-	$pledit -c "Set PlatformInfo:Generic:SystemSerialNumber $maskedVal" config.plist &>/dev/null
-	$pledit -c "Set PlatformInfo:Generic:SystemUUID $maskedVal" config.plist &>/dev/null
-	cd ..
+	$pledit -c "Set PlatformInfo:Generic:MLB $maskedVal" OC/config.plist &>/dev/null
+	$pledit -c "Set PlatformInfo:Generic:ROM $maskedVal" OC/config.plist &>/dev/null
+	$pledit -c "Set PlatformInfo:Generic:SystemSerialNumber $maskedVal" OC/config.plist &>/dev/null
+	$pledit -c "Set PlatformInfo:Generic:SystemUUID $maskedVal" OC/config.plist &>/dev/null
 	echo -e "Dump of OpenCore files completed successfully."
 else
 	echo "OpenCore not installed. Skipping..."
@@ -704,11 +696,6 @@ cd "$outDir"
 echo -e "Zipping all the files"
 zip -r $zipFileName * &>/dev/null
 echo -e "Zipped files at: $outDir/debug_$randomNumber.zip"
-
-# Remove unzipped files
-cd "$outDir"
-shopt -s extglob
-rm -rf -- !(debug_*)
 
 # Ask to open the out directory.
 read -p "Dump complete. Open $outDir?(Yy/Nn) " readOut
