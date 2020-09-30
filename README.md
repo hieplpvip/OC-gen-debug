@@ -10,6 +10,13 @@ Open up Terminal and type:
 curl https://raw.githubusercontent.com/hieplpvip/OC-gen-debug/master/gen_debug.sh -o /usr/local/bin/gen_debug && chmod a+x /usr/local/bin/gen_debug
 ```
 
+To uninstall, run:
+
+```shell
+rm -rf /usr/local/bin/gen_debug
+rm -rf ~/Library/OC-gen-debug
+```
+
 #### Usage
 
 It is a fully automated script. All the dependencies are fetched automatically from GitHub.
