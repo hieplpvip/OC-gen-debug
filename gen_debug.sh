@@ -461,7 +461,7 @@ if [ -e $regExplorer ];
 			then
 			echo -e "Downloaded IORegistryExplorer."
 			echo -e "Verifying Downloaded file."
-			if [[ $(echo $(md5 "$scriptDir/IORegistryExplorer.zip") | sed 's/.*= //g') = 494a39316ed52c0c73438a4755c4732a ]];
+			if [[ $(echo $(md5 "$scriptDir/IORegistryExplorer.zip") | sed 's/.*= //g') = dfb90e340024aaf811074fc2e63054f4 ]];
 				then
 				echo -e "File Verified. Installing."
 				unzip -o "$scriptDir/IORegistryExplorer.zip" -d /Applications/ &>/dev/null
@@ -502,7 +502,7 @@ else
 		then
 		echo -e "Downloaded IORegistryExplorer."
 		echo -e "Verifying Downloaded file."
-		if [[ $(echo $(md5 "$scriptDir/IORegistryExplorer.zip") | sed 's/.*= //g') = 494a39316ed52c0c73438a4755c4732a ]];
+		if [[ $(echo $(md5 "$scriptDir/IORegistryExplorer.zip") | sed 's/.*= //g') = dfb90e340024aaf811074fc2e63054f4 ]];
 			then
 			echo -e "File Verified. Installing."
 			unzip -o "$scriptDir/IORegistryExplorer.zip" -d /Applications/ &>/dev/null
