@@ -48,13 +48,7 @@ function printHeader(){
 }
 
 function checkConn(){
-	if [[ -z "$testURL" ]]; then
-		testURL="github.com"
-	else
-		echo "Using custom test url: $testURL"
-	fi
-
-	if ping -c 1 $testURL &>/dev/null;
+	if ping -c 1 google.com &>/dev/null;
 		then
 		echo "Internet connectivity is all good to go."
 	else
@@ -279,15 +273,7 @@ function updateIfNew(){
 	# This function checks if the script's update is available on the remote
 	# If yes, it will update automatically
 
-	# If internet connection is fine
-	# Hacky way to overcome ping issues in some countries.
-	if [[ -z "$testURL" ]]; then
-		testURL="github.com"
-	else
-		echo "Using custom test url: $testURL"
-	fi
-
-	if ping -c 1 $testURL &>/dev/null;
+	if ping -c 1 google.com &>/dev/null;
 		then
 		echo "Hold on for a moment...."
 		# Get latest version
