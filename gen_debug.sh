@@ -465,12 +465,6 @@ if [ -e $regExplorer ];
 				then
 				echo -e "File Verified. Installing."
 				unzip -o "$scriptDir/IORegistryExplorer.zip" -d /Applications/ &>/dev/null
-				# Add our little hack for verification
-				touch $regExplorer/isVerified
-				if [[ ! -e $regExplorer/isVerified ]]; then
-					# Root access is required I guess.
-					sudo touch $regExplorer/isVerified
-				fi
 				echo -e "Installed IORegistryExplorer at $regExplorer"
 				rm -f "$scriptDir/IORegistryExplorer.zip"
 				rm -rf /Applications/__MACOSX &>/dev/null

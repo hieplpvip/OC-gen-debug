@@ -7,7 +7,7 @@ A script for generating debugging files for Hackintosh running OpenCore
 Open up Terminal and type:
 
 ```shell
-curl https://raw.githubusercontent.com/hieplpvip/OC-gen-debug/master/gen_debug.sh -o /usr/local/bin/gen_debug && chmod a+x /usr/local/bin/gen_debug
+curl https://raw.githubusercontent.com/hieplpvip/OC-gen-debug/master/gen_debug.sh > /usr/local/bin/gen_debug && chmod a+x /usr/local/bin/gen_debug
 ```
 
 To uninstall, run:
