@@ -29,11 +29,8 @@ hostName=$(hostname | sed 's/.local//g' | sed 's/-/_/g')
 genSysDump="no"
 hasOpenCore=""
 
-# Variables used in dumpIOREG (Dynamic Approach)
-IODelayAfterQuit=1 # Delay after quitting IOReg
-IODelayAfterActi=4 # Delay after passing activate command
-IODelayForOneSec=1 # General delay for one second
-IODelayForThreeS=3 # Delay for three seconds
+# Variables used in dumpIOREG
+IODelayForThreeSec=3 # Delay for three seconds
 
 # Declare functions to be used in this script.
 function printHeader(){
@@ -58,10 +55,7 @@ function checkConn(){
 }
 
 function IOIncrement(){
-	IODelayAfterQuit=$(($IODelayAfterQuit + 6))
-	IODelayAfterActi=$(($IODelayAfterActi + 5))
-	IODelayForOneSec=$(($IODelayForOneSec + 4))
-	IODelayForThreeS=$(($IODelayForThreeS + 3))
+	IODelayForThreeSec=$(($IODelayForThreeSec + 3))
 }
 
 timesIncremented=1
@@ -92,26 +86,24 @@ function dumpIOREG(){
 	# Credits black-dragon74
 	osascript >/dev/null 2>&1 <<-EOF
 		quit application "IORegistryExplorer"
-		delay "$IODelayAfterQuit"
+		delay "$IODelayForThreeSec"
 
 		activate application "Applications:IORegistryExplorer.app"
-		delay "$IODelayAfterActi"
+		delay "$IODelayForThreeSec"
 		tell application "System Events"
 			tell process "IORegistryExplorer"
-				keystroke "s" using {command down}
-				delay "$IODelayForOneSec"
+				keystroke "s" using {command down, option down}
+				delay "$IODelayForThreeSec"
 				keystroke "g" using {command down, shift down}
-				delay "$IODelayForOneSec"
+				delay "$IODelayForThreeSec"
 				keystroke "$outDir"
-				delay "$IODelayForOneSec"
+				delay "$IODelayForThreeSec"
 				key code 36
-				delay "$IODelayForThreeS"
+				delay "$IODelayForThreeSec"
 				keystroke "$hostName"
-				delay "$IODelayForOneSec"
+				delay "$IODelayForThreeSec"
 				key code 36
-				delay "$IODelayForThreeS"
-				keystroke "s" using {command down}
-				delay "$IODelayForThreeS"
+				delay "$IODelayForThreeSec"
 			end tell
 		end tell
 
@@ -273,9 +265,7 @@ function updateIfNew(){
 	# This function checks if the script's update is available on the remote
 	# If yes, it will update automatically
 
-	if ping -c 1 google.com &>/dev/null;
-		then
-		echo "Hold on for a moment...."
+	if ping -c 1 google.com &>/dev/null; then
 		# Get latest version
 		cd "$scriptDir"
 		curl -o ndbg $dbgURL &>/dev/null
@@ -289,8 +279,8 @@ function updateIfNew(){
 				case $updAns in
 					[yY]* )
 						# Update
-						sudo cp -f ./ndbg $(which gen_debug)
-						sudo chmod a+x $(which gen_debug)
+						cp -f ./ndbg $(which gen_debug)
+						chmod a+x $(which gen_debug)
 						rm ./ndbg &>/dev/null
 						echo "Great! Now re run the program..."
 						exit
@@ -367,8 +357,8 @@ if [[ ! -z $arg ]]; then
 				exit
 			fi
 			echo "Installing...."
-			sudo cp -f ./tdbg $(which gen_debug)
-			sudo chmod a+x $(which gen_debug)
+			cp -f ./tdbg $(which gen_debug)
+			chmod a+x $(which gen_debug)
 			rm ./tdbg &>/dev/null
 			exit
 			;;
@@ -387,9 +377,9 @@ fi
 # Check if script directory exists else create it
 if [[ -d $scriptDir ]];
 	then
-	echo -e "Found script data directory at $scriptDir"
+	echo -e "Found script directory at $scriptDir"
 else
-	echo -e "Script data directory not present, creating it."
+	echo -e "Script directory not present, creating it."
 	mkdir -p "$scriptDir"
 fi
 
@@ -439,11 +429,6 @@ if [ -e $regExplorer ];
 		echo "This version of IORegistryExplorer is not recommended."
 		echo "Removing conflicting version."
 		rm -rf $regExplorer &>/dev/null
-
-		# In some cases maybe sudo is required to remove this application
-		if [[ -e $regExplorer ]]; then
-			sudo rm -rf $regExplorer &>/dev/null
-		fi
 
 		# Check connection only if required
 		if [ $checkForConnAhead -eq 1 ];
@@ -500,12 +485,6 @@ else
 			then
 			echo -e "File Verified. Installing."
 			unzip -o "$scriptDir/IORegistryExplorer.zip" -d /Applications/ &>/dev/null
-			# Add our little hack for verification
-			touch $regExplorer/isVerified
-			if [[ ! -e $regExplorer/isVerified ]]; then
-				# Root access is required I guess.
-				sudo touch $regExplorer/isVerified
-			fi
 			echo -e "Installed IORegistryExplorer at $regExplorer"
 			rm -f "$scriptDir/IORegistryExplorer.zip"
 			rm -rf /Applications/__MACOSX &>/dev/null
@@ -524,10 +503,10 @@ fi
 # Check for patchmatic
 if [[ $(which patchmatic) = "" ]];
 	then
-	echo -e "Patchmatic not installed. Checking in DATA directory."
+	echo -e "Patchmatic not installed. Checking in script directory."
 	if [[ ! -e $patchmaticB ]];
 		then
-		echo -e "Patchmatic not found in data directory."
+		echo -e "Patchmatic not found in script directory."
 		if [ $checkForConnAhead -eq 1 ];
 			then
 			checkConn &>/dev/null # If no connection found, script will terminate here.
@@ -553,7 +532,7 @@ if [[ $(which patchmatic) = "" ]];
 			fi
 		fi
 	else
-		echo -e "Binary found in DATA directory."
+		echo -e "Binary found in script directory."
 		checkForConnAhead=1
 	fi
 else
@@ -604,7 +583,7 @@ fi
 echo -e "Dumping loaded ACPI tables."
 mkdir patchmatic_extraction
 cd ./patchmatic_extraction
-sudo chmod a+x "$patchmaticB"
+chmod a+x "$patchmaticB"
 "$patchmaticB" -extract
 cd ..
 echo -e "Dumped loaded ACPI tables."
