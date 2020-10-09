@@ -596,7 +596,8 @@ if [[ -e "$efiloc/EFI/OC" ]]; then
 	cp -prf "$efiloc/EFI/OC" .
 	echo -e "Masking your System IDs"
 	$pledit -c "Set PlatformInfo:Generic:MLB $maskedVal" OC/config.plist &>/dev/null
-	$pledit -c "Set PlatformInfo:Generic:ROM $maskedVal" OC/config.plist &>/dev/null
+	$pledit -c "Delete PlatformInfo:Generic:ROM" OC/config.plist &>/dev/null
+	$pledit -c "Add PlatformInfo:Generic:ROM string $maskedVal" OC/config.plist &>/dev/null
 	$pledit -c "Set PlatformInfo:Generic:SystemSerialNumber $maskedVal" OC/config.plist &>/dev/null
 	$pledit -c "Set PlatformInfo:Generic:SystemUUID $maskedVal" OC/config.plist &>/dev/null
 	echo -e "Dump of OpenCore files completed successfully."
